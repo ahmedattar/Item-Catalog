@@ -5,7 +5,7 @@ Item Catalog is one the Udacity Full stack nanodegree projects . It is an applic
 ## Prerequists of using this project
 
 you should have [vagrant](https://www.vagrantup.com/downloads.html) and [virtual machine](https://www.virtualbox.org/wiki/Downloads) on your operating system
-then you should run vagrant
+then you should clone [this repository](https://github.com/udacity/fullstack-nanodegree-vm) and go to vagrant folder and then run vagrant
 ```bash
 $ vagrant up
 ```
