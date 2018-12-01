@@ -255,7 +255,7 @@ def editRestaurant(restaurant_id):
                "Please create your own restaurant in order to edit.');}" \
                "</script><body onload='myFunction()'>"
     if request.method == 'POST':
-        if request.form['name']:
+        if request.form['name'] != NULL:
             editedRestaurant.name = request.form['name']
             flash('Restaurant Successfully Edited %s' % editedRestaurant.name)
             return redirect(url_for('showRestaurants'))
@@ -339,13 +339,13 @@ def editMenuItem(restaurant_id, menu_id):
                "restaurant. Please create your own restaurant in order to edit items.');}" \
                "</script><body onload='myFunction()'>"
     if request.method == 'POST':
-        if request.form['name']:
+        if request.form['name'] != NULL:
             editedItem.name = request.form['name']
-        if request.form['description']:
+        if request.form['description'] != NULL:
             editedItem.description = request.form['description']
-        if request.form['price']:
+        if request.form['price'] != NULL:
             editedItem.price = request.form['price']
-        if request.form['course']:
+        if request.form['course']!= NULL:
             editedItem.course = request.form['course']
         session.add(editedItem)
         session.commit()
@@ -404,4 +404,3 @@ if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
     app.run(host='0.0.0.0', port=8000)
-
