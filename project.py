@@ -33,34 +33,32 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
-""" showLogin:
-The purpose:
- we want the user to take state number ( random generated number )
-to be able to recognize him
-Returns :
-we will pass him to 'login.html' page to be able to login
-
-"""
-
-
 @app.route('/login')
 def showLogin():
+    """ showLogin:
+    The purpose:
+     we want the user to take state number ( random generated number )
+    to be able to recognize him
+    Returns :
+    we will pass him to 'login.html' page to be able to login
+
+    """
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
     # return "The current session state is %s" % login_session['state']
     return render_template('login.html', STATE=state)
-""" gconnect( with post method )
-The purpose:
- first : we want to check that the current user
- uses his state token not stolen one
-Returns : error : if not valid access token
-
-"""
 
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
+    """ gconnect( with post method )
+    The purpose:
+     first : we want to check that the current user
+     uses his state token not stolen one
+    Returns : error : if not valid access token
+
+    """
     # Validate state token
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
@@ -158,16 +156,15 @@ def gconnect():
     print "done!"
     return output
 
-""" createUser
-Args : login_session
-we here make a new user with the input data:
-name,email,picture then we add them
-Returns:
-user id
-"""
-
 
 def createUser(login_session):
+    """ createUser
+    Args : login_session
+    we here make a new user with the input data:
+    name,email,picture then we add them
+    Returns:
+    user id
+    """
     newUser = User(name=login_session['username'],
                    email=login_session['email'],
                    picture=login_session['picture'])
@@ -176,49 +173,46 @@ def createUser(login_session):
     user = session.query(User).filter_by(email=login_session['email']).one()
     return user.id
 
-""" getUserInfo
-
-Args : User_id
-we here want to retrieve information
-about determined user
-
-Returns:
-all information about the required user
-"""
-
 
 def getUserInfo(user_id):
+    """ getUserInfo
+
+    Args : User_id
+    we here want to retrieve information
+    about determined user
+
+    Returns:
+    all information about the required user
+    """
     user = session.query(User).filter_by(id=user_id).one()
     return user
 
-""" getUserID
-
-Args : email
-we here want to retrieve id of the user using his email
-we here have try and except to check for this user
-in our database using his email
-
-Returns:
-user id if he is exist and none if he isn't exist
-"""
-
 
 def getUserID(email):
+    """ getUserID
+
+    Args : email
+    we here want to retrieve id of the user using his email
+    we here have try and except to check for this user
+    in our database using his email
+
+    Returns:
+    user id if he is exist and none if he isn't exist
+    """
     try:
         user = session.query(User).filter_by(email=email).one()
         return user.id
     except:
         return None
 
-"""gdisconnect
-here : we wnt to disconnect one user,
-Revoke a current user's token and reset their login_session
-
-"""
-
 
 @app.route('/gdisconnect')
 def gdisconnect():
+    """gdisconnect
+    here : we wnt to disconnect one user,
+    Revoke a current user's token and reset their login_session
+
+    """
     # Only disconnect a connected user.
     access_token = login_session.get('access_token')
     if access_token is None:
@@ -243,81 +237,75 @@ def gdisconnect():
         return response
 
 
-""" restaurantMenuJSON
-Args :
-restaurant_id
-
-here we want to retrieve elements in the
-restaurant menu using the id of the restaurant
-
-Return :
-the elements in the restaurant menu in JSON format
-
-"""
-
-
 @app.route('/restaurant/<int:restaurant_id>/menu/JSON')
 def restaurantMenuJSON(restaurant_id):
+    """ restaurantMenuJSON
+    Args :
+    restaurant_id
+
+    here we want to retrieve elements in the
+    restaurant menu using the id of the restaurant
+
+    Return :
+    the elements in the restaurant menu in JSON format
+
+    """
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     items = session.query(MenuItem).filter_by(
         restaurant_id=restaurant_id).all()
     return jsonify(MenuItems=[i.serialize for i in items])
 
 
-""" menuItemJSON
-Args :
-restaurant_id, menu_id
-
-here we want to retrieve elements in specified menu of
-specified restaurant menu using the id of the restaurant
-and the id of the menu
-
-Return :
-the elements in the menu of the
-restaurant in JSON format
-
-"""
-
-
 @app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_id>/JSON')
 def menuItemJSON(restaurant_id, menu_id):
+    """ menuItemJSON
+    Args :
+    restaurant_id, menu_id
+
+    here we want to retrieve elements in specified menu of
+    specified restaurant menu using the id of the restaurant
+    and the id of the menu
+
+    Return :
+    the elements in the menu of the
+    restaurant in JSON format
+
+    """
     Menu_Item = session.query(MenuItem).filter_by(id=menu_id).one()
     return jsonify(Menu_Item=Menu_Item.serialize)
-
-""" restaurantsJSON
-here we want to retrieve all restaurants information
-
-Return :
-all restaurants information in JSON format
-
-"""
 
 
 @app.route('/restaurant/JSON')
 def restaurantsJSON():
+    """ restaurantsJSON
+    here we want to retrieve all restaurants information
+
+    Return :
+    all restaurants information in JSON format
+
+    """
     restaurants = session.query(Restaurant).all()
     return jsonify(restaurants=[r.serialize for r in restaurants])
-
-
-""" showRestaurants
-
-
-here we want to show the restaurants in our databse
-in ascending order according to
-restaurant name according to check if the user is user in our data base or not
-
-Return :
-if the user is recorded in the database :
-we will redirect him to his restaurant page
-if he isn't :
-we will redirect him to the public restaurant page
-
-"""
 
 
 @app.route('/')
 @app.route('/restaurant/')
 def showRestaurants():
+    """ showRestaurants
+
+
+    here we want to show the restaurants in our databse
+    in ascending order according to
+    restaurant name according to check if the user is
+    user in our data base or not
+
+    Return :
+    if the user is recorded in the database :
+    we will redirect him to his restaurant page
+    if he isn't :
+    we will redirect him to the public restaurant page
+
+    """
     restaurants = session.query(Restaurant).\
         order_by(asc(Restaurant.name))
     if 'username' not in login_session:
@@ -327,29 +315,28 @@ def showRestaurants():
         return render_template('restaurants.html',
                                restaurants=restaurants)
 
-"""newRestaurant
-Args:
-methods : GET and POST
-
-here we want to create new restaurant in our database
-we first check for the user , want to create new Restaurant ,
-if he is recorded or not in our database
-
-if the method == POST :
-we create newRestaurant and add it to the database
-
-if the method == GET :
-we will return the user to the page to create new restaurant again
-
-Return:
-the page of the restaurants with the added one
-or the page to create new one if the method == GET
-
-"""
-
 
 @app.route('/restaurant/new/', methods=['GET', 'POST'])
 def newRestaurant():
+    """newRestaurant
+    Args:
+    methods : GET and POST
+
+    here we want to create new restaurant in our database
+    we first check for the user , want to create new Restaurant ,
+    if he is recorded or not in our database
+
+    if the method == POST :
+    we create newRestaurant and add it to the database
+
+    if the method == GET :
+    we will return the user to the page to create new restaurant again
+
+    Return:
+    the page of the restaurants with the added one
+    or the page to create new one if the method == GET
+
+    """
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
@@ -363,32 +350,30 @@ def newRestaurant():
         return render_template('newRestaurant.html')
 
 
-"""editRestaurant
-
-Args:
-the id of the restaurant , we want to modify
-methods : GET and POST
-here we get the required restaurant from
-the database using query with the restaurant_id
-
-we first check for the user , want to edit his Restaurant ,
-if he is recorded or not in our database
-
-if the method == POST :
-we edit Restaurant and it modify it in the database
-
-if the method == GET :
-we will return the user to the page to edit restaurant again
-
-Return:
-the page of the restaurants with the edited one
-or the page to edit restaurant if the method == GET
-
-"""
-
-
 @app.route('/restaurant/<int:restaurant_id>/edit/', methods=['GET', 'POST'])
 def editRestaurant(restaurant_id):
+    """editRestaurant
+
+    Args:
+    the id of the restaurant , we want to modify
+    methods : GET and POST
+    here we get the required restaurant from
+    the database using query with the restaurant_id
+
+    we first check for the user , want to edit his Restaurant ,
+    if he is recorded or not in our database
+
+    if the method == POST :
+    we edit Restaurant and it modify it in the database
+
+    if the method == GET :
+    we will return the user to the page to edit restaurant again
+
+    Return:
+    the page of the restaurants with the edited one
+    or the page to edit restaurant if the method == GET
+
+    """
     editedRestaurant = session.query(
         Restaurant).filter_by(id=restaurant_id).one()
     if 'username' not in login_session:
@@ -408,32 +393,30 @@ def editRestaurant(restaurant_id):
                                restaurant=editedRestaurant)
 
 
-"""deleteRestaurant
-
-Args:
-the id of the restaurant , we want to delete
-methods : GET and POST
-here we get the required restaurant from
-the database using query with the restaurant_id
-
-we first check for the user , want to edit his Restaurant ,
-if he is recorded or not in our database
-
-if the method == POST :
-we delete Restaurant and delete it from the database
-
-if the method == GET :
-we will return the user to the page to delete restaurant again
-
-Return:
-the page of the restaurants without the deleted one
-or the page to edit restaurant if the method == GET
-
-"""
-
-
 @app.route('/restaurant/<int:restaurant_id>/delete/', methods=['GET', 'POST'])
 def deleteRestaurant(restaurant_id):
+    """deleteRestaurant
+
+    Args:
+    the id of the restaurant , we want to delete
+    methods : GET and POST
+    here we get the required restaurant from
+    the database using query with the restaurant_id
+
+    we first check for the user , want to edit his Restaurant ,
+    if he is recorded or not in our database
+
+    if the method == POST :
+    we delete Restaurant and delete it from the database
+
+    if the method == GET :
+    we will return the user to the page to delete restaurant again
+
+    Return:
+    the page of the restaurants without the deleted one
+    or the page to edit restaurant if the method == GET
+
+    """
     restaurantToDelete = session.query(
         Restaurant).filter_by(id=restaurant_id).one()
     if 'username' not in login_session:
@@ -452,27 +435,26 @@ def deleteRestaurant(restaurant_id):
         return render_template('deleteRestaurant.html',
                                restaurant=restaurantToDelete)
 
-""" showMenu
-
-Args :
-restaurant_id
-
-here we want to show the menu of the restaurant
-in our database according to check if the user
-is user in our data base or not
-
-Return :
-if the user is recorded in the database :
-we will redirect him to his restaurant menu page
-if he isn't :
-we will redirect him to the public restaurant menu
-
-"""
-
 
 @app.route('/restaurant/<int:restaurant_id>/')
 @app.route('/restaurant/<int:restaurant_id>/menu/')
 def showMenu(restaurant_id):
+    """ showMenu
+
+    Args :
+    restaurant_id
+
+    here we want to show the menu of the restaurant
+    in our database according to check if the user
+    is user in our data base or not
+
+    Return :
+    if the user is recorded in the database :
+    we will redirect him to his restaurant menu page
+    if he isn't :
+    we will redirect him to the public restaurant menu
+
+    """
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     creator = getUserInfo(restaurant.user_id)
     items = session.query(MenuItem).filter_by(
@@ -486,32 +468,30 @@ def showMenu(restaurant_id):
                                restaurant=restaurant, creator=creator)
 
 
-"""newMenuItem
-Args:
-restaurant_id
-and : methods : GET and POST
-
-here we want to create new restaurant in our database
-we first check for the user , want to create new Restaurant ,
-if he is recorded or not in our database
-
-if the method == POST :
-we create new menu item and add it to the restaurant in the database
-
-if the method == GET :
-we will return the user to the page to create new menu item again
-
-Return:
-the page of the restaurant with the added menu item
-or the page to create new item one if the method
-== GET
-
-"""
-
-
 @app.route('/restaurant/<int:restaurant_id>/menu/new/',
            methods=['GET', 'POST'])
 def newMenuItem(restaurant_id):
+    """newMenuItem
+    Args:
+    restaurant_id
+    and : methods : GET and POST
+
+    here we want to create new restaurant in our database
+    we first check for the user , want to create new Restaurant ,
+    if he is recorded or not in our database
+
+    if the method == POST :
+    we create new menu item and add it to the restaurant in the database
+
+    if the method == GET :
+    we will return the user to the page to create new menu item again
+
+    Return:
+    the page of the restaurant with the added menu item
+    or the page to create new item one if the method
+    == GET
+
+    """
     if 'username' not in login_session:
         return redirect('/login')
     restaurant = session.query(Restaurant).\
@@ -536,35 +516,34 @@ def newMenuItem(restaurant_id):
     else:
         return render_template('newmenuitem.html', restaurant_id=restaurant_id)
 
-"""editMenuItem
-
-Args:
-the id of the restaurant , the id of the menu
-we want to edit
-methods : GET and POST
-here we get the required menu of the required restaurant from
-the database using query with the menu_id and restaurant_id
-
-we first check for the user , want to edit his menu item ,
-if he is recorded or not in our database
-
-if the method == POST :
-we edit menu item in the Restaurant and it modify it in the database
-
-if the method == GET :
-we will return the user to the page to edit menu item again
-
-Return:
-the page of the restaurants with the edited one
-or the page to edit menu item of the restaurant if
-the method == GET
-
-"""
-
 
 @app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_id>/edit',
            methods=['GET', 'POST'])
 def editMenuItem(restaurant_id, menu_id):
+    """editMenuItem
+
+    Args:
+    the id of the restaurant , the id of the menu
+    we want to edit
+    methods : GET and POST
+    here we get the required menu of the required restaurant from
+    the database using query with the menu_id and restaurant_id
+
+    we first check for the user , want to edit his menu item ,
+    if he is recorded or not in our database
+
+    if the method == POST :
+    we edit menu item in the Restaurant and it modify it in the database
+
+    if the method == GET :
+    we will return the user to the page to edit menu item again
+
+    Return:
+    the page of the restaurants with the edited one
+    or the page to edit menu item of the restaurant if
+    the method == GET
+
+    """
     if 'username' not in login_session:
         return redirect('/login')
     editedItem = session.query(MenuItem).filter_by(id=menu_id).one()
@@ -596,34 +575,32 @@ def editMenuItem(restaurant_id, menu_id):
             menu_id=menu_id, item=editedItem)
 
 
-"""deleteMenuItem
-
-Args:
-the id of menu item , we want to delete, the id of the restaurant
-methods : GET and POST
-here we get the required menu item and restaurant from
-the database using query with the menu_id and restaurant_id
-
-we first check for the user , want to delete his menu item
-from the restaurant ,
-if he is recorded or not in our database
-
-if the method == POST :
-we delete menu item from the Restaurant and delete it from the database
-
-if the method == GET :
-we will return the user to the page to delete menu item again
-
-Return:
-the page of the restaurants without the deleted one
-or the page to edit restaurant if the method == GET
-
-"""
-
-
 @app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_id>/delete',
            methods=['GET', 'POST'])
 def deleteMenuItem(restaurant_id, menu_id):
+    """deleteMenuItem
+
+    Args:
+    the id of menu item , we want to delete, the id of the restaurant
+    methods : GET and POST
+    here we get the required menu item and restaurant from
+    the database using query with the menu_id and restaurant_id
+
+    we first check for the user , want to delete his menu item
+    from the restaurant ,
+    if he is recorded or not in our database
+
+    if the method == POST :
+    we delete menu item from the Restaurant and delete it from the database
+
+    if the method == GET :
+    we will return the user to the page to delete menu item again
+
+    Return:
+    the page of the restaurants without the deleted one
+    or the page to edit restaurant if the method == GET
+
+    """
     if 'username' not in login_session:
         return redirect('/login')
     restaurant = session.query(Restaurant).\
@@ -648,20 +625,18 @@ def deleteMenuItem(restaurant_id, menu_id):
                                item=itemToDelete)
 
 
-""" diconnect:
-here we want to log out from the website:
-we first check if he is logged in or not
-if he is logged in :
-log out and delete his session information
-Returns:
-if he isn't logged in :
-redirect the user to show Restaurants page
-
-"""
-
-
 @app.route('/disconnect')
 def disconnect():
+    """ diconnect:
+    here we want to log out from the website:
+    we first check if he is logged in or not
+    if he is logged in :
+    log out and delete his session information
+    Returns:
+    if he isn't logged in :
+    redirect the user to show Restaurants page
+
+    """
     if 'provider' in login_session:
         if login_session['provider'] == 'google':
             gdisconnect()
