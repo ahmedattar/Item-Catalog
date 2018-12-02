@@ -1,6 +1,12 @@
 # Item Catalog
 
-Item Catalog is one the Udacity Full stack nanodegree projects . It is an application to sharpen many sills you learned from the nanodegree such as : Flask framework , Authentication , Authorization, CRUD , APIS 
+Item Catalog is one the Udacity Full stack nanodegree projects . It is an application to sharpen many sills you learned from the nanodegree such as : 
+[Flask framework](http://flask.pocoo.org/) , 
+[Authentication](https://www.webopedia.com/TERM/A/authentication.html) ,
+[Authorization](https://www.webopedia.com/TERM/A/authorization.html), 
+CRUD ( create, read , udate , delete ) processes  , 
+APIS,
+[JSON APIS](https://www.w3schools.com/js/js_json_intro.asp)
 
 ## Prerequists of using this project
 
