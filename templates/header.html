@@ -5,12 +5,15 @@
 		</a>
 	</div>
 	<div class="col-md-6 text-right">
+		{%if 'userid' not in session %}
 		<a href="{{url_for('showLogin')}}">
 			<span aria-hidden="true"></span> login
 		</a>
+		{% else %}
 		<a href="{{url_for('disconnect')}}">
 			<span aria-hidden="true"></span> logout
-		</a>			
+		</a>
+		{% endif %}			
 		
 	</div>
 </div>
