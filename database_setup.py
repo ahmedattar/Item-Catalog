@@ -19,7 +19,7 @@ class Restaurant(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
     user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship(User, cascade='all, delete-orphan')
+    user = relationship(User, cascade='all, delete-orphan', single_parent=True)
 
     @property
     def serialize(self):
