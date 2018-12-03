@@ -1,5 +1,12 @@
-from flask import Flask, render_template, request,\
-    redirect, jsonify, url_for, flash
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    jsonify,
+    url_for,
+    flash
+)
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Restaurant, MenuItem, User
@@ -514,7 +521,8 @@ def newMenuItem(restaurant_id):
             flash('New Menu %s Item Successfully Created' % (newItem.name))
             return redirect(url_for('showMenu', restaurant_id=restaurant_id))
     else:
-        return render_template('newmenuitem.html', restaurant_id=restaurant_id)
+        return render_template('newmenuitem.html', restaurant=restaurant,
+                               restaurant_id=restaurant_id)
 
 
 @app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_id>/edit',
@@ -622,6 +630,7 @@ def deleteMenuItem(restaurant_id, menu_id):
                                 restaurant_id=restaurant_id))
     else:
         return render_template('deleteMenuItem.html',
+                               restaurant=restaurant,
                                item=itemToDelete)
 
 
