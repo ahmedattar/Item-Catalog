@@ -33,7 +33,7 @@ so we will create engine to the database ,
 and make session to connect to it
 
 """
-engine = create_engine('sqlite:///restaurantmenuwithusers.db')
+engine = create_engine('postgresql://catalog:password@localhost/catalog')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
